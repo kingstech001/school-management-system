@@ -1,132 +1,121 @@
-// Import the 'readline' module for user interaction
-const readline = require("readline");
-
 // Base Class: Person (Abstraction)
 class Person {
-  constructor(name, id) {
-    this.name = name;
-    this.id = id;
+    constructor(name, id) {
+      this.name = name;
+      this.id = id;
+    }
+  
+    // Method to display basic details
+    getDetails() {
+      return `Name: ${this.name}, ID: ${this.id}`;
+    }
   }
-
-  getDetails() {
-    return `Name: ${this.name}, ID: ${this.id}`;
+  
+  // Derived Class: Student (Inheritance)
+  class Student extends Person {
+    constructor(name, id) {
+      super(name, id); // Inheriting properties and methods from Person
+      this.grades = []; // Encapsulation: Storing grades privately in an array
+    }
+  
+    // Add a grade for the student
+    addGrade(grade) {
+      if (typeof grade !== "number" || grade < 0 || grade > 100) {
+        console.log(`Invalid grade: ${grade}. Please provide a number between 0 and 100.`);
+        return;
+      }
+      this.grades.push(grade);
+    }
+  
+    // Get all grades
+    getGrades() {
+      return this.grades;
+    }
+  
+    // Calculate the average grade (Polymorphism: Extending functionality)
+    calculateAverageGrade() {
+      if (this.grades.length === 0) {
+        return "No grades available.";
+      }
+      const sum = this.grades.reduce((acc, grade) => acc + grade, 0);
+      return (sum / this.grades.length).toFixed(2); // Average with 2 decimal places
+    }
+  
+    // Override getDetails to include average grade
+    getDetails() {
+      const baseDetails = super.getDetails();
+      const averageGrade = this.calculateAverageGrade();
+      return `${baseDetails}, Average Grade: ${averageGrade}`;
+    }
   }
-}
-
-// Derived Class: Student (Inheritance)
-class Student extends Person {
-  constructor(name, id) {
-    super(name, id);
-    this.grades = [];
+  
+  // Student Management System
+  class StudentManagementSystem {
+    constructor() {
+      this.students = []; // Array to store all students
+    }
+  
+    // Add a new student
+    addStudent(name, id) {
+      const existingStudent = this.students.find((student) => student.id === id);
+      if (existingStudent) {
+        console.log(`A student with ID ${id} already exists.`);
+        return;
+      }
+  
+      const student = new Student(name, id);
+      this.students.push(student);
+      console.log(`Student added: ${name} (ID: ${id})`);
+    }
+  
+    // View details of a specific student by ID
+    viewStudentDetails(id) {
+      const student = this.students.find((student) => student.id === id);
+      if (!student) {
+        console.log(`Error: Student with ID ${id} not found.`);
+        return;
+      }
+      console.log(student.getDetails());
+    }
+  
+    // Add a grade for a specific student
+    addGradeToStudent(id, grade) {
+      const student = this.students.find((student) => student.id === id);
+      if (!student) {
+        console.log(`Error: Student with ID ${id} not found.`);
+        return;
+      }
+      student.addGrade(grade);
+      console.log(`Grade ${grade} added to student ID ${id}.`);
+    }
   }
-
-  addGrade(grade) {
-    this.grades.push(grade);
-  }
-
-  getGrades() {
-    return this.grades;
-  }
-
-  calculateAverageGrade() {
-    if (this.grades.length === 0) return "No grades available.";
-    const sum = this.grades.reduce((acc, grade) => acc + grade, 0);
-    return (sum / this.grades.length).toFixed(2);
-  }
-
-  getDetails() {
-    const baseDetails = super.getDetails();
-    const averageGrade = this.calculateAverageGrade();
-    return `${baseDetails}, Average Grade: ${averageGrade}`;
-  }
-}
-
-// Student Management System
-class StudentManagementSystem {
-  constructor() {
-    this.students = [];
-  }
-
-  addStudent(name, id) {
-    const student = new Student(name, id);
-    this.students.push(student);
-    return `Student added: ${name} (ID: ${id})`;
-  }
-
-  viewStudentDetails(id) {
-    const student = this.students.find((student) => student.id === id);
-    if (!student) return `Student with ID ${id} not found.`;
-    return student.getDetails();
-  }
-
-  addGradeToStudent(id, grade) {
-    const student = this.students.find((student) => student.id === id);
-    if (!student) return `Student with ID ${id} not found.`;
-    student.addGrade(grade);
-    return `Grade ${grade} added to student ID ${id}.`;
-  }
-}
-
-// Initialize the system
-const system = new StudentManagementSystem();
-
-// Set up the CLI interface
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-// Display the menu
-function showMenu() {
-  console.log("\n--- Student Management System ---");
-  console.log("1. Add Student");
-  console.log("2. View Student Details");
-  console.log("3. Add Grade to Student");
-  console.log("4. Exit");
-  console.log("----------------------------------");
-
-  rl.question("Choose an option (1-4): ", handleUserChoice);
-}
-
-// Handle user input
-function handleUserChoice(choice) {
-  switch (choice) {
-    case "1": // Add Student
-      rl.question("Enter student name: ", (name) => {
-        rl.question("Enter student ID: ", (id) => {
-          console.log(system.addStudent(name, id));
-          showMenu();
-        });
-      });
-      break;
-
-    case "2": // View Student Details
-      rl.question("Enter student ID to view details: ", (id) => {
-        console.log(system.viewStudentDetails(id));
-        showMenu();
-      });
-      break;
-
-    case "3": // Add Grade to Student
-      rl.question("Enter student ID: ", (id) => {
-        rl.question("Enter grade to add: ", (grade) => {
-          console.log(system.addGradeToStudent(id, parseFloat(grade)));
-          showMenu();
-        });
-      });
-      break;
-
-    case "4": // Exit
-      console.log("Exiting the system. Goodbye!");
-      rl.close();
-      break;
-
-    default:
-      console.log("Invalid choice. Please try again.");
-      showMenu();
-      break;
-  }
-}
-
-// Start the CLI
-showMenu();
+  
+  // --- TESTING THE SYSTEM ---
+  
+  const system = new StudentManagementSystem();
+  
+  // Adding students
+  system.addStudent("Alice", 101);
+  system.addStudent("Bob", 102);
+  
+  // Adding grades
+  system.addGradeToStudent(101, 85);
+  system.addGradeToStudent(101, 90);
+  system.addGradeToStudent(102, 78);
+  
+  // Viewing student details
+  system.viewStudentDetails(101); // Output: Name: Alice, ID: 101, Average Grade: 87.50
+  system.viewStudentDetails(102); // Output: Name: Bob, ID: 102, Average Grade: 78.00
+  
+  // Handling a student with no grades
+  system.addStudent("Charlie", 103);
+  system.viewStudentDetails(103); // Output: Name: Charlie, ID: 103, Average Grade: No grades available.
+  
+  // Handling duplicate student IDs
+  system.addStudent("Alice", 101); // Error: A student with ID 101 already exists.
+  
+  // Handling invalid grades
+  system.addGradeToStudent(101, -10); // Error: Invalid grade
+  system.addGradeToStudent(101, 105); // Error: Invalid grade
+  system.addGradeToStudent(104, 85); // Error: Student with ID 104 not found.
+  
