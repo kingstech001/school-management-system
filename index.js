@@ -95,8 +95,8 @@ class Person {
   const system = new StudentManagementSystem();
   
   // Adding students
-  system.addStudent("Alice", 101);
-  system.addStudent("Bob", 102);
+  system.addStudent("kingsley", 101);
+  system.addStudent("mamah", 102);
   
   // Adding grades
   system.addGradeToStudent(101, 85);
@@ -108,11 +108,11 @@ class Person {
   system.viewStudentDetails(102); // Output: Name: Bob, ID: 102, Average Grade: 78.00
   
   // Handling a student with no grades
-  system.addStudent("Charlie", 103);
+  system.addStudent("mamah", 103);
   system.viewStudentDetails(103); // Output: Name: Charlie, ID: 103, Average Grade: No grades available.
   
   // Handling duplicate student IDs
-  system.addStudent("Alice", 101); // Error: A student with ID 101 already exists.
+  system.addStudent("kingsley", 101); // Error: A student with ID 101 already exists.
   
   // Handling invalid grades
   system.addGradeToStudent(101, -10); // Error: Invalid grade
